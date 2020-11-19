@@ -1,49 +1,43 @@
-using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Datadog.Trace.HttpOverStreams.HttpContent;
-using HttpOverStream;
+using Datadog.Trace.Logging;
 
 namespace Datadog.Trace.HttpOverStreams
 {
     internal class DatadogHttpClient
     {
-        private const string CrLf = "\r\n";
         private const int BufferSize = 10240;
+        private static readonly Vendors.Serilog.ILogger Logger = DatadogLogging.For<DatadogHttpClient>();
 
-        public HttpResponse Send(HttpRequest request, Stream requestStream, Stream responseStream)
+        public Task<HttpResponse> SendAsync(HttpRequest request, Stream requestStream, Stream responseStream, CancellationToken cancellationToken)
         {
-            // TODO: support async and cancellation
-            SendRequest(request, requestStream);
-            return ReadResponse(responseStream);
+            Task.Run(() => SendRequest(request, requestStream, cancellationToken), cancellationToken);
+            return ReadResponse(responseStream, cancellationToken);
         }
 
-        private static void SendRequest(HttpRequest request, Stream requestStream)
+        private static async Task SendRequest(HttpRequest request, Stream requestStream, CancellationToken cancellationToken)
         {
-            // optimization opportunity: cache the ascii-encoded bytes of commonly-used headers
             using (var writer = new StreamWriter(requestStream, Encoding.ASCII, BufferSize, leaveOpen: true))
             {
-                writer.Write($"{request.Verb} {request.Path} HTTP/1.1{CrLf}");
-
-                writer.Write($"Host: {request.Host}{CrLf}");
-                writer.Write($"Accept-Encoding: identity{CrLf}");
-                writer.Write($"User-Agent: dd-trace-dotnet/1.20{CrLf}");
-                // writer.Write($"Connection: close{CrLf}");
-                writer.Write($"Content-Length: {request.Content.Length ?? 0}{CrLf}");
+                await DatadogHttpHeaderHelper.WriteLeadingHeaders(request, writer).ConfigureAwait(false);
 
                 foreach (var header in request.Headers)
                 {
-                    writer.Write($"{header.Name}: {header.Value}{CrLf}");
+                    await DatadogHttpHeaderHelper.WriteHeader(writer, header).ConfigureAwait(false);
                 }
 
-                writer.Write(CrLf);
+                await DatadogHttpHeaderHelper.WriteEndOfHeaders(writer).ConfigureAwait(false);
             }
 
-            request.Content.CopyTo(requestStream);
-            requestStream.Flush();
+            await request.Content.CopyToAsync(requestStream).ConfigureAwait(false);
+            Logger.Debug("Datadog HTTP: Flushing stream.");
+            await requestStream.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        private static HttpResponse ReadResponse(Stream responseStream)
+        private static async Task<HttpResponse> ReadResponse(Stream responseStream, CancellationToken cancellationToken)
         {
             var headers = new HttpHeaders();
             int statusCode = 0;
@@ -59,17 +53,20 @@ namespace Datadog.Trace.HttpOverStreams
             {
                 // HTTP/1.1 200 OK
                 string line = reader.ReadLine();
-                streamPosition += reader.CurrentEncoding.GetByteCount(line) + CrLf.Length;
+                streamPosition += reader.CurrentEncoding.GetByteCount(line) + DatadogHttpHeaderHelper.CrLfLength;
 
-                string statusCodeString = line.Substring(9, 3);
-                statusCode = int.Parse(statusCodeString);
+                if (!int.TryParse(line.Substring(9, 3), out statusCode))
+                {
+                    throw new DatadogHttpRequestException("Invalid response, can't parse status code. Line was:" + line);
+                }
+
                 responseMessage = line.Substring(13);
 
                 // read headers
                 while (true)
                 {
-                    line = reader.ReadLine();
-                    streamPosition += reader.CurrentEncoding.GetByteCount(line) + CrLf.Length;
+                    line = await reader.ReadLineAsync().ConfigureAwait(false);
+                    streamPosition += reader.CurrentEncoding.GetByteCount(line) + DatadogHttpHeaderHelper.CrLfLength;
 
                     if (line == string.Empty)
                     {
@@ -94,7 +91,7 @@ namespace Datadog.Trace.HttpOverStreams
             }
             else if (length != bytesLeft)
             {
-                throw new Exception("Content length from http headers does not match content's actual length.");
+                throw new DatadogHttpRequestException("Content length from http headers does not match content's actual length.");
             }
 
             return new HttpResponse(statusCode, responseMessage, headers, new StreamContent(memoryStream, length));

@@ -1,8 +1,9 @@
-using System.Threading.Tasks;
-using Datadog.Trace.Agent.MessagePack;
 #if NETCOREAPP
 using System;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Datadog.Trace.Agent.MessagePack;
 
 namespace Datadog.Trace.Agent.Transports
 {
@@ -10,11 +11,18 @@ namespace Datadog.Trace.Agent.Transports
     {
         private readonly HttpClient _client;
         private readonly HttpRequestMessage _request;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public HttpClientRequest(HttpClient client, Uri endpoint)
         {
             _client = client;
+            _cancellationTokenSource = new CancellationTokenSource();
             _request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+        }
+
+        public void Cancel()
+        {
+            _cancellationTokenSource.Cancel();
         }
 
         public void AddHeader(string name, string value)
@@ -29,7 +37,7 @@ namespace Datadog.Trace.Agent.Transports
             {
                 _request.Content = content;
 
-                var response = await _client.SendAsync(_request).ConfigureAwait(false);
+                var response = await _client.SendAsync(_request, _cancellationTokenSource.Token).ConfigureAwait(false);
 
                 return new HttpClientResponse(response);
             }

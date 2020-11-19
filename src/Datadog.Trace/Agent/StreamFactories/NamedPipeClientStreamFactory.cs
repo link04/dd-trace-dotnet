@@ -10,6 +10,7 @@ namespace Datadog.Trace.Agent.StreamFactories
         private readonly string _serverName;
         private readonly PipeOptions _pipeOptions;
         private readonly int _timeoutMs;
+        private readonly TokenImpersonationLevel _impersonationLevel;
 
         public NamedPipeClientStreamFactory(string pipeName, int timeoutMs)
             : this(pipeName, ".", PipeOptions.Asynchronous, timeoutMs)
@@ -22,14 +23,14 @@ namespace Datadog.Trace.Agent.StreamFactories
             _serverName = serverName;
             _pipeOptions = pipeOptions;
             _timeoutMs = timeoutMs;
+            _impersonationLevel = impersonationLevel;
         }
 
-        public void GetStreams(out Stream requestStream, out Stream responseStream)
+        public Stream GetBidirectionalStream()
         {
-            var pipeStream = new NamedPipeClientStream(_serverName, _pipeName, PipeDirection.InOut, _pipeOptions);
+            var pipeStream = new NamedPipeClientStream(_serverName, _pipeName, PipeDirection.InOut, _pipeOptions, _impersonationLevel);
             pipeStream.Connect(_timeoutMs);
-            requestStream = pipeStream;
-            responseStream = pipeStream;
+            return pipeStream;
         }
     }
 }

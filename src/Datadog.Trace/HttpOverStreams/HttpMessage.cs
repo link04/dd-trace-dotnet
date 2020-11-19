@@ -1,5 +1,4 @@
 using System.Text;
-using HttpOverStream;
 
 namespace Datadog.Trace.HttpOverStreams
 {

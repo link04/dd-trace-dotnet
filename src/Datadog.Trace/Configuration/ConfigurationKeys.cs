@@ -243,7 +243,7 @@ namespace Datadog.Trace.Configuration
         /// <summary>
         /// Configuration key for overriding the transport to use for communicating with the trace agent.
         /// Default value is <c>null</c>.
-        /// Override options available: <c>datadog-tcp</c>, <c>windows-named-pipes</c>
+        /// Override options available: <c>datadog-tcp</c>, <c>datadog-named-pipes</c>
         /// </summary>
         public const string TraceTransport = "DD_TRACE_TRANSPORT";
 
