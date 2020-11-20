@@ -73,9 +73,9 @@ namespace Datadog.Trace.Configuration
 
             AgentUri = new Uri(agentUri);
 
-            TracesWindowsPipeName = source?.GetString(ConfigurationKeys.TracesWindowsPipeName);
+            TracesPipeName = source?.GetString(ConfigurationKeys.TracesPipeName);
 
-            TracesWindowsPipeTimeoutMs = source?.GetInt32(ConfigurationKeys.TracesWindowsPipeTimeoutMs) ?? 0;
+            TracesPipeTimeoutMs = source?.GetInt32(ConfigurationKeys.TracesPipeTimeoutMs) ?? 0;
 
             TraceTransport = source?.GetString(ConfigurationKeys.TraceTransport);
 
@@ -197,22 +197,22 @@ namespace Datadog.Trace.Configuration
         /// Gets or sets the windows pipe name where the Tracer can connect to the Agent.
         /// Default is null.
         /// </summary>
-        /// <seealso cref="ConfigurationKeys.TracesWindowsPipeName"/>
-        public string TracesWindowsPipeName { get; set; }
+        /// <seealso cref="ConfigurationKeys.TracesPipeName"/>
+        public string TracesPipeName { get; set; }
 
         /// <summary>
         /// Gets or sets the timeout in milliseconds for the windows named pipe requests.
         /// Default is 0.
         /// </summary>
-        /// <seealso cref="ConfigurationKeys.TracesWindowsPipeTimeoutMs"/>
-        public int TracesWindowsPipeTimeoutMs { get; set; }
+        /// <seealso cref="ConfigurationKeys.TracesPipeTimeoutMs"/>
+        public int TracesPipeTimeoutMs { get; set; }
 
         /// <summary>
         /// Gets or sets the windows pipe name where the Tracer can send stats.
         /// Default is null.
         /// </summary>
-        /// <seealso cref="ConfigurationKeys.StatsWindowsPipeName"/>
-        public string StatsWindowsPipeName { get; set; }
+        /// <seealso cref="ConfigurationKeys.MetricsPipeName"/>
+        public string MetricsPipeName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether default Analytics are enabled.

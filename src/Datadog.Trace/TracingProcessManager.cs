@@ -135,7 +135,7 @@ namespace Datadog.Trace
                                 Log.Debug("Starting {0}.", path);
                                 metadata.Process = Process.Start(startInfo);
 
-                                await Task.Delay(150, _cancellationTokenSource.Token);
+                                await Task.Delay(150, _cancellationTokenSource.Token).ConfigureAwait(false);
 
                                 if (metadata.Process == null || metadata.Process.HasExited)
                                 {
@@ -161,11 +161,11 @@ namespace Datadog.Trace
                                 if (metadata.IsFaulted)
                                 {
                                     // Quicker retry in these cases
-                                    await Task.Delay(ExceptionRetryInterval, _cancellationTokenSource.Token);
+                                    await Task.Delay(ExceptionRetryInterval, _cancellationTokenSource.Token).ConfigureAwait(false);
                                 }
                                 else
                                 {
-                                    await Task.Delay(KeepAliveInterval, _cancellationTokenSource.Token);
+                                    await Task.Delay(KeepAliveInterval, _cancellationTokenSource.Token).ConfigureAwait(false);
                                 }
                             }
 

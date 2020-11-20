@@ -70,25 +70,25 @@ namespace Datadog.Trace.Configuration
         public const string AgentPort = "DD_TRACE_AGENT_PORT";
 
         /// <summary>
-        /// Configuration key for windows named pipe where the Tracer can send traces.
+        /// Configuration key for the named pipe where the Tracer can send traces.
         /// Default value is <c>null</c>.
         /// </summary>
-        /// <seealso cref="TracerSettings.TracesWindowsPipeName"/>
-        public const string TracesWindowsPipeName = "DD_APM_WINDOWS_PIPE_NAME";
+        /// <seealso cref="TracerSettings.TracesPipeName"/>
+        public const string TracesPipeName = "DD_TRACE_PIPE_NAME";
 
         /// <summary>
-        /// Configuration key for setting the timeout in milliseconds for windows named pipes communication.
+        /// Configuration key for setting the timeout in milliseconds for named pipes communication.
         /// Default value is <c>0</c>.
         /// </summary>
-        /// <seealso cref="TracerSettings.TracesWindowsPipeTimeoutMs"/>
-        public const string TracesWindowsPipeTimeoutMs = "DD_APM_WINDOWS_PIPE_TIMEOUT_MS";
+        /// <seealso cref="TracerSettings.TracesPipeTimeoutMs"/>
+        public const string TracesPipeTimeoutMs = "DD_TRACE_PIPE_TIMEOUT_MS";
 
         /// <summary>
         /// Configuration key for the name of the pipe where the Tracer can send metrics.
         /// Default value is <c>null</c>.
         /// </summary>
-        /// <seealso cref="TracerSettings.StatsWindowsPipeName"/>
-        public const string StatsWindowsPipeName = "DD_DOGSTATSD_WINDOWS_PIPE_NAME";
+        /// <seealso cref="TracerSettings.MetricsPipeName"/>
+        public const string MetricsPipeName = "DD_DOGSTATSD_WINDOWS_PIPE_NAME";
 
         /// <summary>
         /// Sibling setting for <see cref="AgentPort"/>.

@@ -20,8 +20,8 @@ namespace Datadog.Trace.Agent
                     Log.Information("Using {0} for trace transport.", nameof(TcpStreamFactory));
                     return new HttpStreamRequestFactory(new TcpStreamFactory(settings.AgentUri.Host, settings.AgentUri.Port), new DatadogHttpClient());
                 case "DATADOG-NAMED-PIPES":
-                    Log.Information("Using {0} for trace transport, with pipe name {1} and timeout {2}.", nameof(NamedPipeClientStreamFactory), settings.TracesWindowsPipeName, settings.TracesWindowsPipeTimeoutMs);
-                    return new HttpStreamRequestFactory(new NamedPipeClientStreamFactory(settings.TracesWindowsPipeName, settings.TracesWindowsPipeTimeoutMs), new DatadogHttpClient());
+                    Log.Information("Using {0} for trace transport, with pipe name {1} and timeout {2}.", nameof(NamedPipeClientStreamFactory), settings.TracesPipeName, settings.TracesPipeTimeoutMs);
+                    return new HttpStreamRequestFactory(new NamedPipeClientStreamFactory(settings.TracesPipeName, settings.TracesPipeTimeoutMs), new DatadogHttpClient());
                 default:
                     // Defer decision to Api logic
                     return null;
