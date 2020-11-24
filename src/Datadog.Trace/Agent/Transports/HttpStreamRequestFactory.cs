@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Datadog.Trace.HttpOverStreams;
 
 namespace Datadog.Trace.Agent.Transports
@@ -13,6 +12,11 @@ namespace Datadog.Trace.Agent.Transports
         {
             _streamFactory = streamFactory;
             _httpClient = httpClient;
+        }
+
+        public string Info(Uri endpoint)
+        {
+            return $"{_streamFactory.Info()} to {endpoint}";
         }
 
         public IApiRequest Create(Uri endpoint)

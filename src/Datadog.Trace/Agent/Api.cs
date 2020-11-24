@@ -70,7 +70,7 @@ namespace Datadog.Trace.Agent
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, $"An error occurred while generating http request to send traces to the agent at {_tracesEndpoint}");
+                    Log.Error(ex, "An error occurred while generating http request to send traces to the agent at {0}", _apiRequestFactory.Info(_tracesEndpoint));
                     return false;
                 }
 
@@ -99,7 +99,7 @@ namespace Datadog.Trace.Agent
 #if DEBUG
                     if (ex.InnerException is InvalidOperationException ioe)
                     {
-                        Log.Error(ex, "An error occurred while sending traces to the agent at {0}", _tracesEndpoint);
+                        Log.Error(ex, "An error occurred while sending traces to the agent at {0}", _apiRequestFactory.Info(_tracesEndpoint));
                         Log.Error("Failed to send {0} traces to the DD agent", traces.Length);
                         return false;
                     }
@@ -114,7 +114,7 @@ namespace Datadog.Trace.Agent
                     if (retryCount >= retryLimit)
                     {
                         // stop retrying
-                        Log.Error(exception, "An error occurred while sending traces to the agent at {0}", _tracesEndpoint);
+                        Log.Error(exception, "An error occurred while sending traces to the agent at {0}", _apiRequestFactory.Info(_tracesEndpoint));
                         Log.Error("Failed to send {0} traces to the DD agent", traces.Length);
                         return false;
                     }
@@ -136,7 +136,7 @@ namespace Datadog.Trace.Agent
 
                     if (isSocketException)
                     {
-                        Log.Debug(exception, "Unable to communicate with the trace agent at {0}", _tracesEndpoint);
+                        Log.Debug(exception, "Unable to communicate with the trace agent at {0}", _apiRequestFactory.Info(_tracesEndpoint));
                     }
 
                     // Execute retry delay
@@ -215,7 +215,7 @@ namespace Datadog.Trace.Agent
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "Traces sent successfully to the Agent at {0}, but an error occurred deserializing the response.", _tracesEndpoint);
+                    Log.Error(ex, "Traces sent successfully to the Agent at {0}, but an error occurred deserializing the response.", _apiRequestFactory.Info(_tracesEndpoint));
                 }
             }
             finally

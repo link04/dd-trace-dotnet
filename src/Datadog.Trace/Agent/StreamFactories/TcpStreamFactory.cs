@@ -16,6 +16,11 @@ namespace Datadog.Trace.Agent.StreamFactories
             _port = port;
         }
 
+        public string Info()
+        {
+            return nameof(TcpStreamFactory);
+        }
+
         public Stream GetBidirectionalStream()
         {
             return ConnectSocket(_host, _port);

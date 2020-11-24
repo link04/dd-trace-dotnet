@@ -23,6 +23,11 @@ namespace Datadog.Trace.Agent.StreamFactories
             _timeoutMs = timeoutMs;
         }
 
+        public string Info()
+        {
+            return $@"\\\\{_serverName}\\pipe\\{_pipeName}";
+        }
+
         public Stream GetBidirectionalStream()
         {
             var pipeStream = new NamedPipeClientStream(_serverName, _pipeName, PipeDirection.InOut, _pipeOptions);
