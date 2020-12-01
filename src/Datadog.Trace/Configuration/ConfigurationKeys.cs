@@ -245,7 +245,7 @@ namespace Datadog.Trace.Configuration
         /// Default value is <c>null</c>.
         /// Override options available: <c>datadog-tcp</c>, <c>datadog-named-pipes</c>
         /// </summary>
-        public const string TraceTransport = "DD_TRACE_TRANSPORT";
+        public const string TracesTransport = "DD_TRACE_TRANSPORT";
 
         /// <summary>
         /// String format patterns used to match integration-specific configuration keys.

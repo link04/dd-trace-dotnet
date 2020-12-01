@@ -14,11 +14,6 @@ namespace Datadog.Trace.Agent.Transports
             TraceRequestDecorator.AddHeaders(this);
         }
 
-        public void Cancel()
-        {
-            // no-op
-        }
-
         public void AddHeader(string name, string value)
         {
             _request.Headers.Add(name, value);

@@ -21,8 +21,7 @@ namespace Datadog.Trace.Agent.Transports
 
         public IApiRequest Create(Uri endpoint)
         {
-            var bidirectionalStream = _streamFactory.GetBidirectionalStream();
-            return new HttpStreamRequest(_httpClient, endpoint, bidirectionalStream, bidirectionalStream);
+            return new HttpStreamRequest(_httpClient, endpoint, _streamFactory);
         }
     }
 }

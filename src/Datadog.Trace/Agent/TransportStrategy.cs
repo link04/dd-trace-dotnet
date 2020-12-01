@@ -12,7 +12,7 @@ namespace Datadog.Trace.Agent
 
         public static IApiRequestFactory Get(TracerSettings settings)
         {
-            var strategy = settings.TraceTransport?.ToUpperInvariant();
+            var strategy = settings.TracesTransport?.ToUpperInvariant();
 
             switch (strategy)
             {

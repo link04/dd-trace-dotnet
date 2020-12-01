@@ -25,7 +25,7 @@ namespace Datadog.Trace.Agent.StreamFactories
 
         public string Info()
         {
-            return $@"\\\\{_serverName}\\pipe\\{_pipeName}";
+            return $@"\\{_serverName}\pipe\{_pipeName}";
         }
 
         public Stream GetBidirectionalStream()

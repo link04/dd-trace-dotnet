@@ -1,6 +1,5 @@
 using System.IO;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Datadog.Trace.HttpOverStreams.HttpContent;
 using Datadog.Trace.Logging;
@@ -12,13 +11,13 @@ namespace Datadog.Trace.HttpOverStreams
         private const int BufferSize = 10240;
         private static readonly Vendors.Serilog.ILogger Logger = DatadogLogging.For<DatadogHttpClient>();
 
-        public Task<HttpResponse> SendAsync(HttpRequest request, Stream requestStream, Stream responseStream, CancellationToken cancellationToken)
+        public Task<HttpResponse> SendAsync(HttpRequest request, Stream requestStream, Stream responseStream)
         {
-            Task.Run(() => SendRequest(request, requestStream, cancellationToken), cancellationToken);
-            return ReadResponse(responseStream, cancellationToken);
+            Task.Run(() => SendRequest(request, requestStream));
+            return ReadResponse(responseStream);
         }
 
-        private static async Task SendRequest(HttpRequest request, Stream requestStream, CancellationToken cancellationToken)
+        private static async Task SendRequest(HttpRequest request, Stream requestStream)
         {
             using (var writer = new StreamWriter(requestStream, Encoding.ASCII, BufferSize, leaveOpen: true))
             {
@@ -34,10 +33,10 @@ namespace Datadog.Trace.HttpOverStreams
 
             await request.Content.CopyToAsync(requestStream).ConfigureAwait(false);
             Logger.Debug("Datadog HTTP: Flushing stream.");
-            await requestStream.FlushAsync(cancellationToken).ConfigureAwait(false);
+            await requestStream.FlushAsync().ConfigureAwait(false);
         }
 
-        private static async Task<HttpResponse> ReadResponse(Stream responseStream, CancellationToken cancellationToken)
+        private static async Task<HttpResponse> ReadResponse(Stream responseStream)
         {
             var headers = new HttpHeaders();
             int statusCode = 0;
@@ -83,7 +82,7 @@ namespace Datadog.Trace.HttpOverStreams
 
             memoryStream.Position = streamPosition;
             long bytesLeft = memoryStream.Length - memoryStream.Position;
-            var length = long.TryParse(headers.GetValue("Content-Length"), out long headerValue) ? headerValue : (long?)null;
+            var length = long.TryParse(headers.GetValue("Content-Length"), out var headerValue) ? headerValue : (long?)null;
 
             if (length == null)
             {
