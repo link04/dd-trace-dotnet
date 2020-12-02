@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Datadog.Trace.Agent.MessagePack;
+using Datadog.Trace.ExtensionMethods;
 using Datadog.Trace.HttpOverStreams;
 using Datadog.Trace.HttpOverStreams.HttpContent;
 
@@ -19,7 +20,7 @@ namespace Datadog.Trace.Agent.Transports
             _uri = uri;
             _client = client;
             _streamFactory = streamFactory;
-            TraceRequestDecorator.AddHeaders(this);
+            this.AddDefaultHeaders();
         }
 
         public void AddHeader(string name, string value)

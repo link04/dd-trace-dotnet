@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Datadog.Trace.Agent.MessagePack;
+using Datadog.Trace.ExtensionMethods;
 
 namespace Datadog.Trace.Agent.Transports
 {
@@ -11,7 +12,7 @@ namespace Datadog.Trace.Agent.Transports
         public ApiWebRequest(HttpWebRequest request)
         {
             _request = request;
-            TraceRequestDecorator.AddHeaders(this);
+            this.AddDefaultHeaders();
         }
 
         public void AddHeader(string name, string value)
